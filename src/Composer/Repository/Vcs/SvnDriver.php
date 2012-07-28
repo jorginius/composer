@@ -91,14 +91,15 @@ class SvnDriver extends VcsDriver
      */
     public function getComposerInformation($identifier)
     {
-        $identifier = '/' . trim($identifier, '/') . '/';
+        $identifier =  trim($identifier, '/');
+        $svnId = '/' . $identifier . '/';
 
         if ($res = $this->cache->read($identifier.'.json')) {
             $this->infoCache[$identifier] = JsonFile::parseJson($res);
         }
 
         if (!isset($this->infoCache[$identifier])) {
-            preg_match('{^(.+?)(@\d+)?/$}', $identifier, $match);
+            preg_match('{^(.+?)(@\d+)?/$}', $svnId, $match);
             if (!empty($match[2])) {
                 $path = $match[1];
                 $rev = $match[2];
@@ -205,7 +206,7 @@ class SvnDriver extends VcsDriver
     public static function supports(IOInterface $io, $url, $deep = false)
     {
         $url = self::normalizeUrl($url);
-        if (preg_match('#(^svn://|^svn\+ssh://|svn\.)#i', $url)) {
+        if (preg_match('#(^http[s]?://|^svn://|^svn\+ssh://|svn\.)#i', $url)) {
             return true;
         }
 
